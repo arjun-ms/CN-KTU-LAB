@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
@@ -6,7 +7,7 @@
 
 int main(){
 	int clientSocket;
-	char buffer[1024];
+	char from[20],to[20],message[1000],c;
 	struct sockaddr_in serverAddr;
 	socklen_t addrSize;
 	
@@ -21,8 +22,20 @@ int main(){
 	addrSize = sizeof(serverAddr);
 	connect(clientSocket,(struct sockaddr*)&serverAddr,addrSize);
 	
-	recv(clientSocket,buffer,1024,0);
-	printf("Data recieved : %s",buffer);
+	printf("Enter from address mail: ");
+	scanf("%s",from);
+	send(clientSocket,from,sizeof(from),0);
 	
+	printf("\nEnter to address mail: ");
+	scanf("%s",to);
+	send(clientSocket,to,sizeof(to),0);
+	
+	printf("Enter mail content: \n");
+	while((c=getchar())!= '\n'){}
+	// memset(message,0,sizeof(message));
+	fgets(message,sizeof(message),stdin);
 
+	send(clientSocket,message,sizeof(message),0);
+	
+	printf("\nMAIL SENT");
 }

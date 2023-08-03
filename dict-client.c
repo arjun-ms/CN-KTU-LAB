@@ -3,6 +3,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <stdlib.h>
 
 int main(){
 	int clientSocket;
@@ -21,8 +22,17 @@ int main(){
 	addrSize = sizeof(serverAddr);
 	connect(clientSocket,(struct sockaddr*)&serverAddr,addrSize);
 	
-	recv(clientSocket,buffer,1024,0);
-	printf("Data recieved : %s",buffer);
+	while(1){
+		printf("\nWord: ");
+		scanf("%s",buffer);
+		send(clientSocket,buffer,sizeof(buffer),0);
+		if(strcmp(buffer,"exit")==0)
+			exit(0);
+		recv(clientSocket,buffer,sizeof(buffer),0);
+		printf("Meaning: %s\n",buffer);
+		recv(clientSocket,buffer,sizeof(buffer),0);
+		printf("Antonym: %s\n",buffer);
+	}
 	
 
 }

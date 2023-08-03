@@ -10,7 +10,7 @@ int main(){
 	struct sockaddr_in serverAddr;
 	socklen_t addrSize;
 	
-	clientSocket = socket(AF_INET,SOCK_STREAM,0);
+	clientSocket = socket(AF_INET,SOCK_DGRAM,0);
 	
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(8000);
@@ -19,10 +19,10 @@ int main(){
 	memset(serverAddr.sin_zero,'\0',sizeof(serverAddr.sin_zero));
 	
 	addrSize = sizeof(serverAddr);
-	connect(clientSocket,(struct sockaddr*)&serverAddr,addrSize);
 	
-	recv(clientSocket,buffer,1024,0);
-	printf("Data recieved : %s",buffer);
+	strcpy(buffer,inet_ntoa(serverAddr.sin_addr));
+	sendto(clientSocket,buffer,1024,0,(struct sockaddr*)&serverAddr,addrSize);
 	
+	printf("IP sent");
 
 }
