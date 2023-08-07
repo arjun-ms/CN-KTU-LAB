@@ -21,6 +21,7 @@ int main(){
 	
 	addrSize = sizeof(serverAddr);
 	connect(clientSocket,(struct sockaddr*)&serverAddr,addrSize);
+	printf("Connected\n");
 	
 	printf("Enter from address mail: ");
 	scanf("%s",from);

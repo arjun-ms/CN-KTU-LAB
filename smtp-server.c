@@ -27,6 +27,7 @@ int main(){
 	
 	addrSize = sizeof(serverStorage);
 	newSocket = accept(welcomeSocket,(struct sockaddr*)&serverStorage,&addrSize);
+	printf("Connected\n");
 	
 	recv(newSocket,buffer,1024,0);
 	printf("FROM: %s\n",buffer);

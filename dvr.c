@@ -1,60 +1,58 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+int i,j,k,l,n;
+int costMatrix[20][20];
 
-int costMatrix[20][20],n;
-int i,j,k,l;
-struct router{
-	int distance[20];
+struct Router{
+	int dist[20];
 	int nextHop[20];
 }node[20];
 
 void readCostMatrix(){
-	printf("Enter cost matrix: ");
+	printf("Enter the cost matrix");
 	for(i=0;i<n;i++){
 		for(j=0;j<n;j++){
 			scanf("%d",&costMatrix[i][j]);
-			
-			if (i==j) {
+			if (i==j){
 				costMatrix[i][j] = 0;
 			}
-			node[i].distance[j] = costMatrix[i][j];
+			node[i].dist[j] = costMatrix[i][j];
 			node[i].nextHop[j] = j;
 		}
 	}
 }
 
-void calcRoutingTable(){
+void calculateDistance(){
 	for (l=1;l<n;l++){
-		for (i=0;i<n;i++){
-			for (j=0;j<n;j++){
-				for (k=0;k<n;k++){
-					if(node[i].distance[k]+node[k].distance[j] < node[i].distance[j] ){
-						node[i].distance[j] = node[i].distance[k]+node[k].distance[j];
-						node[i].nextHop[j]=k;
-					}
+		for(i=0;i<n;i++){
+			for(j=0;j<n;j++){
+				for(k=0;k<n;k++){
+					if(node[i].dist[k]+node[k].dist[j] < node[i].dist[j]){
+						node[i].dist[j] = node[i].dist[k]+node[k].dist[j];
+						node[i].nextHop[j] = k;
+					}			
 				}
 			}
 		}
 	}
 }
 
-void displayRoutes(){
+void displayMatrix(){
 	for(i=0;i<n;i++){
-		printf("\n Router %d\n",i+1);
-	
+		printf("Router %d \n",i+1);
+		
 		for (j=0;j<n;j++){
-			printf("Node %d via %d | distance %d",j+1,node[i].nextHop[j]+1,node[i].distance[j]);
+			printf("Node %d via %d | distance = %d",j+1,node[i].nextHop[j]+1,node[i].dist[j]);
 			printf("\n");
 		}
 	}
 }
 
 int main(){
-	printf("Enter no of nodes: ");
+	printf("Enter a number: ");
 	scanf("%d",&n);
-	
 	readCostMatrix();
-	calcRoutingTable();
-	displayRoutes();
-	
-	return 0;
+	calculateDistance();
+	displayMatrix();
 }
