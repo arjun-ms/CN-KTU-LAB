@@ -30,6 +30,7 @@ int main(){
 	
 	addrSize = sizeof(serverStorage);
 	newSocket = accept(welcomeSocket,(struct sockaddr*)&serverStorage,&addrSize);
+	printf("Connected");
 	
 	ticks = time(NULL);
 	

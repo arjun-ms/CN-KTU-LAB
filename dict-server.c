@@ -37,11 +37,13 @@ int main(){
 	
 	addrSize = sizeof(serverStorage);
 	newSocket = accept(welcomeSocket,(struct sockaddr*)&serverStorage,&addrSize);
+	printf("Connected");
 	
 	while(1){
 		recv(newSocket,buffer,sizeof(buffer),0);
 		if(strcmp(buffer,"exit")==0)
 			exit(0);
+
 		printf("\nWord: %s",buffer);
 		
 		for(int i=0;i<7;i++){

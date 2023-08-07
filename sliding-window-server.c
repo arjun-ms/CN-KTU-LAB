@@ -1,79 +1,76 @@
+
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <sys/socket.h>
 #include <arpa/inet.h>
+#include <sys/socket.h>
 #include <netinet/in.h>
-
+#include <stdlib.h>
 #define SIZE 4
-
 int main(){
-	
-	int welcomeSocket,newSocket;
-	int i=0,j,status;
-	char str[20],frame[20],ack[20];
-	struct sockaddr_in serverAddr,clientAddr;
-	socklen_t addrSize;
-	
-	welcomeSocket = socket(AF_INET,SOCK_STREAM,0);
-	
-	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htons(8000);
-	serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-	
-	//memset(serverAddr,0,sizeof(serverAddr))
-	
-	bind(welcomeSocket,(struct sockaddr*)&serverAddr,sizeof(serverAddr));
-	
-	if (listen(welcomeSocket,5)<0){
-		printf("Error\n");
-	}
-	
-	addrSize = sizeof(clientAddr);
-	newSocket= accept(welcomeSocket,(struct sockaddr *)&clientAddr,&addrSize);
-	
-	printf("Enter text: ");
-	scanf("%s",str);
-	
-	while(i<strlen(str)){
-		//strncpy is a function used to copy a specified 
-		//number of characters from one string to another.
-		//char *strncpy(char *destination, const char *source, size_t num);
+    int welcomeSocket,newSocket;
+    char buffer[1024],str[1024],temp[1024];
+    struct sockaddr_in serverAddr;
+    socklen_t addrSize;
+
+    welcomeSocket = socket(AF_INET,SOCK_STREAM,0);
+
+    serverAddr.sin_family = AF_INET;
+    serverAddr.sin_port = htons(7898);
+    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+
+    memset(serverAddr.sin_zero,'\0',sizeof(serverAddr.sin_zero));
+    bind(welcomeSocket,(struct sockaddr *)&serverAddr,sizeof(serverAddr));
+
+    if(listen(welcomeSocket,5)==0)
+        printf("Listening\n");
+    else
+        printf("Error");
+
+    addrSize = sizeof(serverAddr);
+
+    newSocket = accept(welcomeSocket,(struct sockaddr *)&serverAddr,&addrSize);
+    printf("Connected\n");
+    
+    printf("Enter a string: ");
+    scanf("%s",str);
+    
+    int i=0;
+    while(i<strlen(str)){
+		memset(buffer,0,sizeof(buffer));
+		//slicing
+		strncpy(buffer,str+i,SIZE);
 		
-		strncpy(frame,str+i,20);
-		int len = strlen(frame);
+		//converting int to str
+		int n=strlen(buffer);
+		for(int j=0;j<n;j++){
+			sprintf(temp,"%d",i+j);
+			//concatinating
+			strcat(buffer,temp);
+		}
+
+		printf("\nFRAME TRANSMITTED: %s\n",buffer);
 		
-		//for (j=0;j<len;j++){
-			//sprintf(temp,"%d",i+j);
-			//strcat(frame,temp);
-		//}
+		//sending
+		send(newSocket,buffer,1024,0);
 		
-		for (j = 0; j < len; j++) {
-            sprintf(frame + len, "%d", i + j);
-        }
-		
-		printf("Frame transmitted: %s\n",frame);
-		
-		write(newSocket,frame,sizeof(frame));
-		read(newSocket,ack,20);
-		sscanf(ack,"%d",&status);
-		
-		if (status==-1){
-			printf(">> Transmission successful.\n");
-			i += 20;
+		//recieve status of error
+		recv(newSocket,buffer,1024,0);
+		int choice = atoi(buffer);
+		//No error
+		if (choice==0){
+			printf("\nTransmission is successfull \n");
+			i += SIZE;
 		}
 		else{
-			printf(">> Recieved error in %d.\n",status);
-			i=status;
+			printf("\nError in frame %d",choice);
+			i = choice;
 		}
-		printf("\n");
 	}
-	write(newSocket,"exit",sizeof("exit"));
-	printf("Exiting...");
-	sleep(2);
-	close(newSocket);
-	close(welcomeSocket);
-	return 0;
 	
+	strcpy(buffer,"exit");
+	send(newSocket,buffer,1024,0);
+	
+	printf("Exiting\n");
+
+    return 0;
 }
