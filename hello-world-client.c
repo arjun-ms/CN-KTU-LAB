@@ -13,16 +13,15 @@ int main(){
 	clientSocket = socket(AF_INET,SOCK_STREAM,0);
 	
 	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htons(8000);
+	serverAddr.sin_port = htons(9999);
 	serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	
 	memset(serverAddr.sin_zero,'\0',sizeof(serverAddr.sin_zero));
 	
 	addrSize = sizeof(serverAddr);
-	connect(clientSocket,(struct sockaddr*)&serverAddr,addrSize);
 	
-	recv(clientSocket,buffer,1024,0);
-	printf("Data recieved : %s",buffer);
-	
+	connect(clientSocket,(struct sockaddr *)&serverAddr,addrSize);
 
+	recv(clientSocket,buffer,sizeof(buffer),0);
+	printf("Data: %s",buffer);
 }
